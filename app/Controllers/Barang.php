@@ -9,19 +9,22 @@ class Barang extends BaseController
 {
     public function index()
     {
-        $model = new BarangModel();
+        $db = \Config\Database::connect();
 
-        $data['barang'] = $model
-            ->select('tb_barang.*, tb_kategori.nama_kategori')
-            ->join('tb_kategori', 'tb_kategori.id_kategori = tb_barang.id_kategori')
-            ->findAll();
+        $builder = $db->table('tb_barang');
+        $builder->select('tb_barang.*, tb_kategori.nama_kategori');
+        $builder->join('tb_kategori', 'tb_kategori.id_kategori = tb_barang.id_kategori');
+
+        $query = $builder->get();
+
+        $data['barang'] = $query->getResultArray();
 
         return view('barang/index', $data);
     }
 
-        public function create()
+    public function create()
     {
-        $kategoriModel = new KategoriModel();
+        $kategoriModel = new \App\Models\KategoriModel();
         $data['kategori'] = $kategoriModel->findAll();
 
         return view('barang/create', $data);
@@ -29,14 +32,25 @@ class Barang extends BaseController
 
     public function store()
     {
-        $model = new BarangModel();
+        $file = $this->request->getFile('foto');
+        $namaFoto = null;
+
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $namaFoto = $file->getRandomName();
+            $file->move('uploads', $namaFoto);
+        }
+
+        $model = new \App\Models\BarangModel();
 
         $model->save([
-        'nama_barang' => $this->request->getPost('nama_barang'),
-        'harga' => $this->request->getPost('harga'),
-        'stok' => $this->request->getPost('stok'),
-        'id_kategori' => $this->request->getPost('id_kategori')
-    ]);
+            'nama_barang' => $this->request->getPost('nama_barang'),
+            'id_kategori' => $this->request->getPost('id_kategori'),
+            'harga'       => $this->request->getPost('harga'),
+            'stok'        => $this->request->getPost('stok'),
+            'deskripsi'   => $this->request->getPost('deskripsi'),
+            'foto'        => $namaFoto
+        ]);
+
         return redirect()->to('/barang');
     }
 
@@ -61,15 +75,47 @@ class Barang extends BaseController
 
     public function update($id)
     {
-        $model = new BarangModel();
+        $model = new \App\Models\BarangModel();
+
+        $barangLama = $model->find($id);
+
+        $file = $this->request->getFile('foto');
+        $namaFoto = $barangLama['foto']; // default pakai foto lama
+
+        // Kalau upload foto baru
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+
+            // Hapus foto lama kalau ada
+            if (!empty($barangLama['foto']) && file_exists('uploads/' . $barangLama['foto'])) {
+                unlink('uploads/' . $barangLama['foto']);
+            }
+
+            $namaFoto = $file->getRandomName();
+            $file->move('uploads', $namaFoto);
+        }
 
         $model->update($id, [
             'nama_barang' => $this->request->getPost('nama_barang'),
-            'harga' => $this->request->getPost('harga'),
-            'stok' => $this->request->getPost('stok'),
-            'id_kategori' => $this->request->getPost('id_kategori')
+            'harga'       => $this->request->getPost('harga'),
+            'stok'        => $this->request->getPost('stok'),
+            'id_kategori' => $this->request->getPost('id_kategori'),
+            'deskripsi'   => $this->request->getPost('deskripsi'),
+            'foto'        => $namaFoto
         ]);
 
         return redirect()->to('/barang');
+    }
+
+    public function detail($id)
+    {
+        $db = \Config\Database::connect();
+
+        $builder = $db->table('tb_barang');
+        $builder->select('*');
+        $builder->where('id', $id);
+
+        $data['barang'] = $builder->get()->getRowArray();
+
+        return view('barang/detail', $data);
     }
 }
