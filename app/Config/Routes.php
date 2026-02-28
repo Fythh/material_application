@@ -79,6 +79,9 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     $routes->get('/penjualan', 'Penjualan::index');
     $routes->get('/penjualan/delete/(:num)', 'Penjualan::delete/$1');
     $routes->post('/penjualan/update-status/(:num)', 'Penjualan::updateStatus/$1');
+    $routes->get('penjualan/detail/(:num)', 'Penjualan::detail/$1');
+    $routes->post('penjualan/update-status/(:num)', 'Penjualan::updateStatus/$1');
+
 
     // ================= USER AREA =================
     $routes->group('user', function($routes) {
@@ -104,6 +107,10 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
         $routes->get('remove/(:num)', 'User::removeFromCart/$1');
         $routes->get('checkout', 'User::checkoutForm');
         $routes->post('process-checkout', 'User::processCheckout');
+        $routes->post('keranjang/tambah/(:num)', 'User::addToCart/$1'); 
+        $routes->get('add-to-cart/(:num)', 'User::addToCart/$1');
+        $routes->post('add-to-cart/(:num)', 'User::addToCart/$1');
+        $routes->get('remove-batch', 'User::remove_batch');
     });
     
 });

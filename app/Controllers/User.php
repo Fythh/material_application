@@ -11,49 +11,51 @@ class User extends BaseController
     // CART
     // ======================
 
-    public function addToCart($id)
+ public function addToCart($id)
 {
-    // Ambil qty dari POST (kalo ada) atau default 1
-    $qty = $this->request->getPost('qty') ?? 1;
-    
-    // Validasi stok (opsional)
-    $barangModel = new BarangModel();
+    $barangModel = new \App\Models\BarangModel();
     $barang = $barangModel->find($id);
     
     if (!$barang) {
-        if ($this->request->isAJAX()) {
-            return $this->response->setJSON(['success' => false, 'message' => 'Produk tidak ditemukan']);
-        }
-        return redirect()->back()->with('error', 'Produk tidak ditemukan');
+        return $this->response->setJSON(['success' => false, 'message' => 'Produk ga ada, Bro!']);
     }
-    
-    // Cek stok
+
+    $qty = (int)($this->request->getPost('qty') ?: 1);
     $cart = session()->get('cart') ?? [];
-    $currentQty = $cart[$id] ?? 0;
-    $totalQty = $currentQty + $qty;
     
-    if ($totalQty > $barang['stok']) {
-        if ($this->request->isAJAX()) {
-            return $this->response->setJSON(['success' => false, 'message' => 'Stok tidak mencukupi']);
-        }
-        return redirect()->back()->with('error', 'Stok tidak mencukupi');
+    $currentQtyInCart = isset($cart[$id]) ? $cart[$id] : 0;
+    $totalQtyRequested = $currentQtyInCart + $qty;
+    
+    if ($totalQtyRequested > $barang['stok']) {
+        return $this->response->setJSON([
+            'success' => false, 
+            'message' => "Stok sisa {$barang['stok']}. Di cart lo udah ada {$currentQtyInCart}."
+        ]);
     }
     
-    // Update cart
-    $cart[$id] = $totalQty;
+    $cart[$id] = $totalQtyRequested;
     session()->set('cart', $cart);
     
-    // Kalo request AJAX (dari Beli Sekarang)
+    // Sinyal Flashdata untuk cadangan (jika user refresh manual)
+    session()->setFlashdata('cart_added', true);
+
     if ($this->request->isAJAX()) {
-        return $this->response->setJSON(['success' => true, 'redirect' => '/user/checkout']);
+        return $this->response->setJSON([
+            'success' => true, 
+            'message' => 'Mantap! Produk masuk keranjang.',
+            'total_items' => count($cart) // Ini yang dibaca Navbar nanti
+        ]);
     }
-    
-    // Kalo request biasa (dari tombol Tambah ke Cart)
-    return redirect()->to('/user/cart');
+
+    return redirect()->to('/user/cart')->with('success', 'Berhasil ditambah ke keranjang');
 }
 
     public function cart()
     {
+
+        $this->response->setHeader('Cache-Control', 'no-store, max-age=0, no-cache');
+        $this->response->setHeader('Pragma', 'no-cache');
+
         $cart = session()->get('cart') ?? [];
 
         $model = new BarangModel();
@@ -86,6 +88,34 @@ class User extends BaseController
 
         return redirect()->to('/user/cart');
     }
+
+   public function remove_batch()
+{
+    // 1. Ambil list ID dari URL (contoh: 1,4,7)
+    $ids_string = $this->request->getGet('ids');
+
+    if ($ids_string) {
+        $ids_to_remove = explode(',', $ids_string);
+        
+        // 2. Ambil data keranjang yang ada di session sekarang
+        // Sesuaikan 'cart' dengan nama key session yang lo pake (misal: 'keranjang')
+        $cart = session()->get('cart') ?? [];
+
+        // 3. Looping ID yang mau dihapus
+        foreach ($ids_to_remove as $id) {
+            if (isset($cart[$id])) {
+                unset($cart[$id]); // Hapus item dari array
+            }
+        }
+
+        // 4. Simpan lagi array yang udah "bersih" ke session
+        session()->set('cart', $cart);
+
+        return redirect()->to('/user/cart')->with('success', count($ids_to_remove) . ' material berhasil dibuang.');
+    }
+
+    return redirect()->to('/user/cart')->with('error', 'Gagal menghapus, pilih barang dulu.');
+}
 
     public function updateCart($id)
     {

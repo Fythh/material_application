@@ -144,23 +144,21 @@
                                 </td>
 
                                 <td class="px-8 py-6 text-right">
-                                    <div class="flex items-center justify-end gap-3">
-                                        <!-- Dropdown Update Status -->
-                                        <select onchange="updateStatus(<?= $p['id_penjualan'] ?>, this.value)" 
-                                                class="status-select px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-black border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary outline-none cursor-pointer">
-                                            <option value="pending" <?= $status == 'pending' ? 'selected' : '' ?>>⏳ Pending</option>
-                                            <option value="diproses" <?= $status == 'diproses' ? 'selected' : '' ?>>🔄 Diproses</option>
-                                            <option value="dikirim" <?= $status == 'dikirim' ? 'selected' : '' ?>>🚚 Dikirim</option>
-                                            <option value="selesai" <?= $status == 'selesai' ? 'selected' : '' ?>>✅ Selesai</option>
-                                        </select>
+    <div class="flex items-center justify-end gap-3">
+        <a href="<?= base_url('/penjualan/detail/'.$p['id_penjualan']); ?>" 
+           class="p-3 text-slate-400 hover:text-primary hover:bg-orange-50 dark:hover:bg-orange-500/10 rounded-2xl transition-all group">
+            <i data-lucide="eye" class="w-5 h-5 transition-transform group-hover:scale-110"></i>
+        </a>
 
-                                        <!-- Tombol Hapus (Batalkan) -->
-                                        <button onclick="konfirmasiHapus('<?= base_url('/penjualan/delete/'.$p['id_penjualan']); ?>')" 
-                                                class="p-3 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-2xl transition-all">
-                                            <i data-lucide="trash-2" class="w-5 h-5"></i>
-                                        </button>
-                                    </div>
-                                </td>
+        <select onchange="updateStatus(<?= $p['id_penjualan'] ?>, this.value)" 
+                class="status-select px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-black border border-slate-200 dark:border-slate-700 outline-none cursor-pointer">
+            <option value="pending" <?= $status == 'pending' ? 'selected' : '' ?>>⏳</option>
+            <option value="diproses" <?= $status == 'diproses' ? 'selected' : '' ?>>🔄</option>
+            <option value="dikirim" <?= $status == 'dikirim' ? 'selected' : '' ?>>🚚</option>
+            <option value="selesai" <?= $status == 'selesai' ? 'selected' : '' ?>>✅</option>
+        </select>
+    </div>
+</td>
                             </tr>
                             <?php endforeach; ?>
                         <?php else: ?>

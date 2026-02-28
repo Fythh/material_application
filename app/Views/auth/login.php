@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Material Kita.</title>
+    <title>Login | Material Masa Kini.</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script>
@@ -14,165 +15,132 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
-                    colors: {
-                        primary: '#f48c25',
-                        amber: { 500: '#f59e0b', 600: '#d97706' },
-                        dark: '#0f172a'
-                    }
+                    colors: { primary: '#f48c25', dark: '#0f172a' }
                 }
             }
         }
     </script>
 
     <style>
-        body {
-            background: #f8fafc;
-            background-image: radial-gradient(at 0% 0%, rgba(244, 140, 37, 0.1) 0px, transparent 50%);
-            min-height: 100vh;
+        body { margin: 0; overflow: hidden; background: #0f172a; }
+        #video-bg {
+            position: fixed; right: 0; bottom: 0;
+            min-width: 100%; min-height: 100%;
+            z-index: -1; filter: brightness(0.4) contrast(1.2);
+            object-fit: cover;
         }
-        .btn-gradient {
-            background: linear-gradient(135deg, #f48c25 0%, #f59e0b 100%);
+        .main-card-glow {
+            position: relative; padding: 3px; border-radius: 3.1rem;
+            overflow: hidden; background: rgba(255, 255, 255, 0.1);
         }
-        .tab-active {
-            color: #f48c25;
-            border-bottom: 3px solid #f48c25;
+        .main-card-glow::before {
+            content: ''; position: absolute; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(transparent, transparent, transparent, #f48c25);
+            animation: rotate-border 6s linear infinite;
         }
-        /* Transisi halus buat ganti konten */
-        #content-wrapper {
-            transition: all 0.3s ease-in-out;
+        @keyframes rotate-border { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .premium-card {
+            position: relative; z-index: 1; background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
         }
+        .btn-glow-container {
+            position: relative; padding: 2px; border-radius: 1rem;
+            overflow: hidden; display: inline-block; width: 100%;
+        }
+        .btn-glow-container::before {
+            content: ''; position: absolute; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(transparent, transparent, transparent, #f48c25);
+            animation: rotate-border 3s linear infinite;
+        }
+        .btn-inner {
+            position: relative; z-index: 1; background: white;
+            width: 100%; border-radius: 0.9rem; transition: all 0.3s;
+            color: #f48c25; font-weight: 900;
+        }
+        .btn-inner:hover { background: #f48c25; color: white; }
+        .typed-cursor { display: none !important; }
     </style>
 </head>
-<body class="flex items-center justify-center p-4">
+<body class="flex items-center justify-center min-h-screen p-6">
 
-    <div class="w-full max-w-[1000px] grid grid-cols-1 lg:grid-cols-2 bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-slate-100">
-        
-        <div class="hidden lg:flex bg-dark relative p-16 flex-col justify-between">
-            <div class="absolute inset-0 opacity-20" style="background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');"></div>
+    <video autoplay muted loop playsinline id="video-bg">
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-construction-site-of-a-new-building-44141-large.mp4" type="video/mp4">
+    </video>
+
+    <div class="main-card-glow w-full max-w-[1050px]">
+        <div class="grid grid-cols-1 lg:grid-cols-2 premium-card rounded-[3rem] overflow-hidden">
             
-            <div class="relative z-10">
-                <div class="flex items-center gap-3 mb-12">
-                    <div class="bg-primary p-2 rounded-xl text-white">
-                        <i data-lucide="construction" class="w-8 h-8"></i>
+            <div class="hidden lg:flex p-16 flex-col justify-between text-white bg-slate-900/95 relative">
+                <div class="relative z-10">
+                    <div class="flex items-center gap-4 mb-20">
+                        <div class="bg-primary p-3 rounded-2xl text-white rotate-3">
+                            <i data-lucide="construction" class="w-8 h-8"></i>
+                        </div>
+                        <h1 class="text-2xl font-black italic uppercase tracking-tighter">Material <span class="text-primary">Masa Kini.</span></h1>
                     </div>
-                    <h1 class="text-3xl font-black text-white italic uppercase tracking-tighter">Material <span class="text-primary">Masa Kini</span></h1>
+                    
+                    <div class="min-h-[300px] flex flex-col justify-start">
+                        <h2 class="text-5xl font-black leading-[1.1] italic uppercase tracking-tighter mb-8 min-h-[180px]">
+                            <span id="typing-hero"></span>
+                        </h2>
+                        <p class="text-slate-400 text-lg font-medium max-w-xs">
+                            Solusi material bangunan kualitas juara untuk proyek impian Anda.
+                        </p>
+                    </div>
                 </div>
-                
-                <div id="hero-content">
-                    <h2 id="hero-text" class="text-5xl font-extrabold text-white leading-tight italic uppercase">
-                        Build Your <br><span class="text-primary">Dreams</span> With Us.
-                    </h2>
-                    <p id="hero-sub" class="text-slate-400 mt-6 text-lg font-medium tracking-wide">Platform belanja material bangunan terlengkap dan terpercaya.</p>
-                </div>
+                <div class="text-slate-500 text-[10px] font-black uppercase tracking-[0.5em]">SINCE 2026 &bull; PARTNER</div>
             </div>
 
-            <div class="relative z-10 text-slate-500 text-sm font-bold uppercase tracking-widest">
-                Professional Grade &bull; v3.0
+            <div class="p-10 md:p-14 lg:p-16 flex flex-col bg-white">
+                <div class="flex bg-slate-100 p-1 rounded-2xl mb-12 border border-slate-200">
+                    <button onclick="switchRole('pengguna')" id="tab-user" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest bg-primary text-white rounded-xl shadow-md">Akun Mitra</button>
+                    <button onclick="switchRole('admin')" id="tab-admin" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">Akun Seller</button>
+                </div>
+
+                <div class="mb-10 min-h-[100px]">
+                    <h3 class="text-4xl font-black italic uppercase tracking-tighter text-slate-900">
+                        <span id="typing-title"></span>
+                    </h3>
+                    <p class="text-slate-500 font-bold mt-2">Silahkan masuk ke dashboard Anda.</p>
+                </div>
+
+                <form action="<?= base_url('login/process') ?>" method="post" class="space-y-5">
+                    <input type="hidden" name="login_role" id="login_role" value="pengguna">
+                    <input type="text" name="username" placeholder="Username" required class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 outline-none focus:border-primary font-bold text-slate-700">
+                    <input type="password" name="password" placeholder="Password" required class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 outline-none focus:border-primary font-bold text-slate-700">
+                    <div class="btn-glow-container mt-4">
+                        <button type="submit" class="btn-inner py-5 text-xs font-black uppercase tracking-[0.3em]">Masuk Sekarang</button>
+                    </div>
+                </form>
             </div>
         </div>
-
-        <div class="p-8 md:p-12 lg:p-16 flex flex-col">
-            
-            <div class="flex border-b border-slate-100 mb-10">
-                <button type="button" onclick="switchRole('pengguna')" id="tab-user" class="flex-1 py-4 text-sm font-black uppercase tracking-widest transition-all tab-active">
-                    <i data-lucide="shopping-bag" class="w-4 h-4 inline mr-2"></i> Akun Mitra
-                </button>
-                <button type="button" onclick="switchRole('admin')" id="tab-admin" class="flex-1 py-4 text-sm font-black uppercase tracking-widest text-slate-400 transition-all">
-                    <i data-lucide="shield-check" class="w-4 h-4 inline mr-2"></i> Akun Seller
-                </button>
-            </div>
-
-            <div class="mb-8" id="title-wrapper">
-                <h3 id="form-title" class="text-3xl font-black text-slate-800 italic uppercase tracking-tight">Halo <span class="text-primary">Mitra!</span></h3>
-                <p id="form-desc" class="text-slate-500 font-medium mt-1">Siap untuk melengkapi kebutuhan proyek Anda?</p>
-            </div>
-
-            <?php if(session()->getFlashdata('error')): ?>
-                <div class="mb-6 p-4 bg-red-50 text-red-700 text-sm font-bold rounded-2xl flex items-center gap-3 border-l-4 border-red-500 animate-pulse">
-                    <i data-lucide="alert-circle" class="w-5 h-5 text-red-500"></i>
-                    <?= session()->getFlashdata('error') ?>
-                </div>
-            <?php endif; ?>
-            
-            <form action="<?= base_url('login/process') ?>" method="post" class="space-y-5">
-                <input type="hidden" name="login_role" id="login_role" value="pengguna">
-
-                <div class="space-y-2">
-                    <div class="flex items-center gap-4 bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 focus-within:border-primary transition-all group">
-                        <i data-lucide="user" class="text-slate-400 group-focus-within:text-primary transition-colors w-5 h-5"></i>
-                        <input type="text" name="username" placeholder="Masukkan username" required 
-                            class="bg-transparent w-full outline-none font-bold text-slate-700 placeholder:text-slate-300 placeholder:font-normal">
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <div class="flex items-center gap-4 bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 focus-within:border-primary transition-all group">
-                        <i data-lucide="lock" class="text-slate-400 group-focus-within:text-primary transition-colors w-5 h-5"></i>
-                        <input type="password" name="password" placeholder="Password" required 
-                            class="bg-transparent w-full outline-none font-bold text-slate-700 placeholder:text-slate-300">
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-gradient w-full py-5 rounded-2xl text-white font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 mt-4">
-                    LOGIN SEKARANG
-                    <i data-lucide="arrow-right" class="w-5 h-5"></i>
-                </button>
-            </form>
-
-            <div class="mt-auto pt-10 text-center">
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">
-                    &copy; 2026 Material Kita. &bull; Build with Heart.
-                </p>
-            </div>
-        </div>
-
     </div>
 
     <script>
-        // Inisialisasi Icon Lucide
         lucide.createIcons();
-
+        var typedHero = new Typed('#typing-hero', {
+            strings: ['Build Your<br><span class="text-primary">Dreams</span><br>With Us.', 'Bangun<br><span class="text-primary">Proyek</span><br>Hebat.'],
+            typeSpeed: 50, backSpeed: 30, loop: true, showCursor: false
+        });
+        var typedTitle = new Typed('#typing-title', {
+            strings: ['Halo <span class="text-primary">Mitra!</span>', 'Selamat <span class="text-primary">Datang!</span>'],
+            typeSpeed: 60, backSpeed: 40, loop: true, showCursor: false
+        });
         function switchRole(role) {
-            const tabUser = document.getElementById('tab-user');
-            const tabAdmin = document.getElementById('tab-admin');
-            const formTitle = document.getElementById('form-title');
-            const formDesc = document.getElementById('form-desc');
-            const heroText = document.getElementById('hero-text');
-            const heroSub = document.getElementById('hero-sub');
-            const hiddenInput = document.getElementById('login_role');
-            
-            // Set value hidden input untuk dikirim ke PHP
-            hiddenInput.value = role;
-
-            if (role === 'admin') {
-                // Update Style Tab
-                tabAdmin.classList.add('tab-active');
-                tabAdmin.classList.remove('text-slate-400');
-                tabUser.classList.remove('tab-active');
-                tabUser.classList.add('text-slate-400');
-                
-                // Update Teks Form (Kanan)
-                formTitle.innerHTML = 'Halo <span class="text-primary">Seller!</span>';
-                formDesc.innerText = 'Silahkan masuk untuk mengelola stok & pesanan.';
-                
-                // Update Teks Branding (Kiri)
-                heroText.innerHTML = 'Efficient <br><span class="text-primary">Management.</span>';
-                heroSub.innerText = 'Kendalikan inventori gudang dalam satu dasbor cerdas.';
+            const tu = document.getElementById('tab-user'); const ta = document.getElementById('tab-admin');
+            document.getElementById('login_role').value = role;
+            if(role === 'admin') {
+                ta.className = "flex-1 py-3 text-[10px] font-black uppercase tracking-widest transition-all bg-primary text-white rounded-xl shadow-md";
+                tu.className = "flex-1 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 transition-all";
+                typedTitle.strings = ['Halo <span class="text-primary">Seller!</span>', 'Kelola <span class="text-primary">Stok!</span>'];
             } else {
-                // Update Style Tab
-                tabUser.classList.add('tab-active');
-                tabUser.classList.remove('text-slate-400');
-                tabAdmin.classList.remove('tab-active');
-                tabAdmin.classList.add('text-slate-400');
-
-                // Update Teks Form (Kanan)
-                formTitle.innerHTML = 'Halo <span class="text-primary">Mitra!</span>';
-                formDesc.innerText = 'Siap untuk melengkapi kebutuhan proyek Anda?';
-                
-                // Update Teks Branding (Kiri)
-                heroText.innerHTML = 'Build Your <br><span class="text-primary">Dreams</span> With Us.';
-                heroSub.innerText = 'Platform belanja material bangunan terlengkap dan terpercaya.';
+                tu.className = "flex-1 py-3 text-[10px] font-black uppercase tracking-widest transition-all bg-primary text-white rounded-xl shadow-md";
+                ta.className = "flex-1 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 transition-all";
+                typedTitle.strings = ['Halo <span class="text-primary">Mitra!</span>', 'Selamat <span class="text-primary">Datang!</span>'];
             }
+            typedTitle.reset();
         }
     </script>
 </body>
